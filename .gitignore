@@ -1,6 +1,35 @@
+# Dependencies
+node_modules/
+Frontend/node_modules/
+Backend/venv/
+
+# Environment variables
 .env
-*.env
-# Local workspace secrets
-workspace/
-*.json
-*.pem
+Backend/.env
+
+# Build outputs
+Frontend/build/
+Backend/__pycache__/
+*.pyc
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Credentials (keep template)
+Backend/credentials.py
+
+# Git directories in node_modules (prevents nested repo issues)
+**/node_modules/**/.git

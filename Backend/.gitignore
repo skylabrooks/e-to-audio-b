@@ -1,0 +1,7 @@
+.env
+*.env
+# Local workspace secrets
+workspace/
+*.json
+*.pem
+credentials.py

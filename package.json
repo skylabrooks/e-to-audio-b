@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@genkit-ai/mcp": "^1.19.2",
+    "@google-cloud/secret-manager": "^6.1.0",
+    "@google-cloud/text-to-speech": "^6.3.0"
+  }
+}
