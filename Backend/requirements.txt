@@ -1,0 +1,6 @@
+click==8.2.1
+Flask==3.1.2
+Flask-CORS==4.0.0
+google-cloud-texttospeech==2.29.0
+google-cloud-secret-manager==2.16.4
+python-dotenv==1.1.1

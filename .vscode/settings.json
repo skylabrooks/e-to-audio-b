@@ -1,4 +1,11 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.pythonProjects": []
+    "chat.mcp.serverSampling": {
+        "gemini": {
+            "command": "npx",
+            "args": ["@modelcontextprotocol/server-gemini"],
+            "env": {
+                "GEMINI_API_KEY": "AIzaSyBwsbVLMtDor3K4025z2xggIcnhs_DWPxw"
+            }
+        }
+    }
 }

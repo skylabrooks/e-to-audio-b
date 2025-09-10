@@ -1,0 +1,25 @@
+{
+    "folders": [
+        {
+            "name": "Root",
+            "path": "."
+        },
+        {
+            "name": "Frontend",
+            "path": "./frontend"
+        },
+        {
+            "name": "Backend", 
+            "path": "./backend"
+        },
+        
+    ],
+    "settings": {
+        "chat.mcp.serverSampling": {
+            "gemini": {
+                "command": "npx",
+                "args": ["gemini-mcp-server"]
+            }
+        }
+    }
+}
