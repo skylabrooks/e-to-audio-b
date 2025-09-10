@@ -1,7 +1,7 @@
 <#
 PowerShell helper to upload a service account JSON to Google Secret Manager.
 Usage:
-  .\upload_secret_to_secretmanager.ps1 -ServiceAccountPath 'C:\path\to\sa.json' -SecretName 'tts-credentials' -Project 'e-to-audio-book'
+  .\upload_secret_to_secretmanager.ps1 -ServiceAccountPath 'C:\Users\Clay\source\repos\EtoAudioBook - Copy\Backend\service-account.json' -SecretName 'tts-credentials' -Project 'e-to-audio-book'
 #>
 param(
     [Parameter(Mandatory=$true)]

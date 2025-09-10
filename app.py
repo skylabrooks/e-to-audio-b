@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from credentials import get_credentials
 
 app = Flask(__name__)
-CORS(app)  # Allow all origins
+CORS(app, origins=["http://localhost:3000"])
 load_dotenv()
 
 # Configure logging
@@ -171,14 +171,11 @@ def preview_voice():
     try:
         data = request.json
         voice_name = data.get('voiceName')
-        language_code = data.get('languageCode')
         sample_text = data.get('text', 'Hello, this is a voice preview.')
-
-        logger.info(f"Received voice preview request for voice: {voice_name} with language: {language_code}")
-
-        if not voice_name or not language_code:
-            return jsonify({'error': 'Voice name and language code required'}), 400
-
+        
+        if not voice_name:
+            return jsonify({'error': 'Voice name required'}), 400
+            
         # Initialize client
         creds = None
         try:
@@ -190,26 +187,24 @@ def preview_voice():
             client = texttospeech.TextToSpeechClient.from_service_account_info(creds)
         else:
             client = texttospeech.TextToSpeechClient()
-
+            
         synthesis_input = texttospeech.SynthesisInput(text=sample_text)
         voice = texttospeech.VoiceSelectionParams(
-            name=voice_name,
-            language_code=language_code
+            name=voice_name
         )
         audio_config = texttospeech.AudioConfig(
             audio_encoding=texttospeech.AudioEncoding.MP3
         )
-
+        
         response = client.synthesize_speech(
             input=synthesis_input,
             voice=voice,
             audio_config=audio_config
         )
-
+        
         audio_base64 = base64.b64encode(response.audio_content).decode('utf-8')
-        logger.info("Successfully synthesized voice preview")
         return jsonify({'audio': audio_base64})
-
+        
     except Exception as e:
         logger.error(f'Voice preview error: {e}')
         return jsonify({'error': str(e)}), 500
@@ -242,21 +237,15 @@ def synthesize_speech():
             for segment in segments:
                 role = segment['role']
                 text = segment['text']
-                voice_info = voice_mapping.get(role)
-
-                if not voice_info:
-                    continue
-
-                voice_name = voice_info.get('voiceName')
-                language_code = voice_info.get('languageCode')
-
-                if not voice_name or not language_code:
+                voice_name = voice_mapping.get(role)
+                
+                if not voice_name:
                     continue
                     
                 synthesis_input = texttospeech.SynthesisInput(text=text)
                 voice = texttospeech.VoiceSelectionParams(
                     name=voice_name,
-                    language_code=language_code
+                    language_code='en-US'  # Assuming English for now
                 )
                 audio_config = texttospeech.AudioConfig(
                     audio_encoding=texttospeech.AudioEncoding.MP3

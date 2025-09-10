@@ -6,11 +6,11 @@
         },
         {
             "name": "Frontend",
-            "path": "./frontend"
+            "path": "./Frontend"
         },
         {
             "name": "Backend", 
-            "path": "./backend"
+            "path": "./Backend"
         },
         
     ],

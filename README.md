@@ -21,7 +21,7 @@ Transform your stories into immersive audiobooks with multiple AI voices! EtoAud
 ### 1. Clone & Setup
 ```bash
 git clone <your-repo-url>
-cd EtoAudioBook
+cd EtoAudioBook - Copy
 ```
 
 ### 2. Automated Setup (Windows)
