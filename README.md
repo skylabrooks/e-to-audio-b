@@ -204,4 +204,54 @@ This project is licensed under the MIT License.
 
 ---
 
+## 🚀 Quick Deployment
+
+### Production Deployment
+```bash
+# One-command deployment
+deploy-production.bat
+
+# Verify deployment
+verify-deployment.bat
+
+# Run tests
+integration-test.bat
+```
+
+### Manual Setup
+```bash
+# 1. Configure environment
+copy .env.example .env
+# Edit .env with your settings
+
+# 2. Deploy with Docker
+docker-compose up -d
+
+# 3. Test the application
+integration-test.bat
+```
+
+## 📊 Performance & Monitoring
+
+- **Metrics**: http://localhost:5000/metrics
+- **Health Check**: http://localhost:5000/health
+- **Performance Testing**: `performance-test.bat`
+- **Load Testing**: `load-test.bat`
+
+## 🧪 Testing
+
+```bash
+# Complete test suite
+test-runner.bat
+
+# Integration tests
+integration-test.bat
+
+# Performance tests
+performance-test.bat
+
+# Load tests
+load-test.bat
+```
+
 **Ready to create your first multi-voice audiobook? Upload `demo-story.md` and start experimenting!** 🎭🎵

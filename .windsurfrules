@@ -1,0 +1,212 @@
+# Windsurf AI Rules for EtoAudioBook
+
+## Project Type
+Full-stack web application for multi-voice audiobook generation using React frontend and Flask backend with Google Cloud Text-to-Speech.
+
+## Key Technologies
+- Frontend: React 19.1.1, Create React App, JavaScript
+- Backend: Flask, Python 3.12, Google Cloud TTS API
+- Development: VS Code, MCP agents, Git version control
+- Cloud: Google Cloud Platform, Service Account authentication
+
+## Architecture Rules
+
+### Backend (Flask API)
+- Main entry: `Backend/app.py`
+- Credentials: Environment variables only (never hardcode)
+- TTS Service: Google Cloud Text-to-Speech client
+- Role Detection: Parse `**Character Name:**` markdown format
+- Response Format: Consistent JSON with success/error handling
+- CORS: Enabled for frontend communication
+
+### Frontend (React SPA)
+- Entry point: `Frontend/src/index.js`
+- Main component: `Frontend/src/App.js`
+- State management: React hooks (useState, useEffect)
+- API calls: Async/await with error handling
+- File upload: Support text files for conversion
+- Audio playback: HTML5 audio controls
+
+## Development Standards
+
+### Python Code Style
+- Formatter: Black (88 characters)
+- Import sorting: isort with Black profile
+- Linting: Flake8 enabled
+- Type checking: mypy enabled
+- Naming: snake_case functions, PascalCase classes
+- Documentation: Google-style docstrings
+
+### JavaScript Code Style  
+- Formatter: Prettier (2 spaces, semicolons)
+- Linting: ESLint with React rules
+- Naming: camelCase variables, PascalCase components
+- Components: Functional components with hooks
+- Imports: Absolute imports preferred, group external/internal
+
+### File Organization
+```
+├── Backend/           # Flask API server
+│   ├── app.py        # Main application
+│   ├── credentials.py # Secure credential management
+│   └── .env          # Environment variables (gitignored)
+├── Frontend/         # React application
+│   ├── src/          # Source code
+│   └── public/       # Static assets
+└── docs/             # Documentation
+```
+
+## Security Requirements
+- Environment Variables: All secrets in .env files
+- Gitignore: credentials.py, *.env, service account JSON
+- Input Validation: Sanitize all user inputs
+- Authentication: Google Cloud service account
+- CORS Policy: Restrict to development/production origins
+
+## API Design Guidelines
+
+### Endpoint Structure
+- `POST /api/detect-roles` - Extract character roles from text
+- `GET /api/voices` - List available TTS voices
+- `POST /api/synthesize` - Generate audio with voice assignments
+
+### Request/Response Format
+```python
+# Success Response
+{
+    "success": True,
+    "data": {...},
+    "message": "Operation completed successfully"
+}
+
+# Error Response  
+{
+    "success": False,
+    "error": "Error description",
+    "details": {...}  # Optional debug info
+}
+```
+
+### Error Handling
+- Use specific HTTP status codes (200, 400, 404, 500)
+- Log errors with context using Python logging
+- Return user-friendly error messages
+- Don't expose internal system details
+
+## TTS Implementation Rules
+
+### Text Processing
+- Role Detection: Regex pattern `r'\*\*(.*?):\*\*'`
+- Text Segmentation: Split by role for individual synthesis
+- Voice Assignment: Map detected roles to TTS voices
+- Audio Format: Generate MP3 for web compatibility
+
+### Voice Selection
+- Support multiple voice types (male, female, neutral)
+- Allow voice customization per character
+- Provide voice preview functionality
+- Handle voice availability gracefully
+
+## Testing Strategy
+
+### Backend Testing
+- Framework: pytest with coverage reporting
+- Test Structure: Unit tests for business logic
+- Mocking: Mock Google Cloud TTS API calls
+- Fixtures: Reusable test data and setup
+
+### Frontend Testing  
+- Framework: Jest + React Testing Library
+- Component Tests: User interaction testing
+- API Integration: Mock backend responses
+- Coverage: Aim for >80% code coverage
+
+## Development Workflow
+
+### Local Development
+1. Backend: `cd Backend && python app.py` (port 5000)
+2. Frontend: `cd Frontend && npm start` (port 3000)
+3. Combined: `make run-all` for both servers
+
+### Code Quality
+- Pre-commit: Format and lint before commits
+- Commands: Use Makefile for consistency
+  - `make format` - Format all code
+  - `make lint` - Run all linters  
+  - `make test` - Execute test suites
+
+### Environment Setup
+- Python: Virtual environment in Backend/venv
+- Node: npm packages in Frontend/node_modules
+- Configuration: Copy .env.example to .env
+
+## Performance Guidelines
+- Async Operations: Use async/await for TTS generation
+- Progress Tracking: Show generation progress to users
+- File Handling: Stream large file uploads
+- Caching: Cache voice lists and common responses
+- Error Recovery: Graceful degradation on API failures
+
+## Common Patterns
+
+### React Patterns
+```javascript
+// Component with hooks
+const AudioBookGenerator = () => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  
+  const handleGenerate = async (text, voiceMap) => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/synthesize', {...});
+      // Handle response
+    } catch (error) {
+      // Error handling
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+};
+```
+
+### Flask Patterns
+```python
+@app.route('/api/synthesize', methods=['POST'])
+def synthesize_audio():
+    try:
+        data = request.get_json()
+        # Validation
+        if not data or 'text' not in data:
+            return jsonify({
+                'success': False, 
+                'error': 'Text is required'
+            }), 400
+        
+        # Process with TTS
+        result = process_tts(data['text'])
+        return jsonify({
+            'success': True,
+            'data': result
+        })
+    except Exception as e:
+        logger.error(f"TTS synthesis error: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Synthesis failed'
+        }), 500
+```
+
+## Debugging Guidelines
+- Use browser DevTools for frontend debugging
+- Use Python debugger (pdb) for backend issues
+- Check network tab for API request/response issues
+- Review browser console for JavaScript errors
+- Monitor Flask logs for backend errors
+
+## Deployment Considerations
+- Environment: Separate .env files for dev/prod
+- Secrets: Use Google Secret Manager in production
+- Static Assets: Build Frontend for production serving
+- Monitoring: Implement health check endpoints
+- Scaling: Consider containerization for deployment

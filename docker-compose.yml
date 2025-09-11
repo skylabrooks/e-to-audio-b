@@ -1,0 +1,42 @@
+services:
+  backend:
+    build: ./Backend
+    container_name: etoaudiobook-backend
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/service-account.json
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ${GOOGLE_CREDENTIALS_PATH}:/app/credentials/service-account.json:ro
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build: ./Frontend
+    container_name: etoaudiobook-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: etoaudiobook-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

@@ -1,0 +1,17 @@
+# Templates (local use only)
+.templates/
+
+# Session Management (阶段1新增)
+.session-log/
+
+# VS Code Settings (optional)
+.vscode/settings.json
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/

@@ -1,0 +1,177 @@
+# Goose Hints for EtoAudioBook Development
+
+## Project Overview
+Multi-voice audiobook generation web application using React frontend + Flask backend with Google Cloud Text-to-Speech integration.
+
+## Quick Context
+- **Purpose**: Convert text documents to audiobooks with different voices for different characters
+- **Tech Stack**: React 19.1.1, Flask (Python 3.12), Google Cloud TTS API
+- **Architecture**: Frontend serves UI, Backend handles TTS processing and role detection
+- **Text Format**: Markdown-style `**Character Name:** dialogue` for role identification
+
+## Development Environment
+
+### Directory Structure
+```
+├── Backend/           # Flask API (Python)
+├── Frontend/         # React app (JavaScript) 
+├── docs/            # Documentation
+├── mcp.json         # MCP server config
+└── Makefile         # Dev commands
+```
+
+### Key Commands
+- `make setup` - Initial project setup
+- `make run-all` - Start both servers (Backend:5000, Frontend:3000)
+- `make test` - Run all tests (pytest + Jest)
+- `make format` - Format code (Black + Prettier)
+- `make lint` - Run linters (Flake8 + ESLint)
+
+## Code Standards
+
+### Python (Backend)
+- **Formatter**: Black (88 chars), isort for imports
+- **Style**: snake_case functions, PascalCase classes
+- **Type Hints**: Required for function signatures
+- **Error Handling**: Use specific exceptions + logging
+- **Secrets**: Environment variables only, never hardcode
+
+### JavaScript/React (Frontend)
+- **Formatter**: Prettier (2 spaces)
+- **Style**: camelCase variables, PascalCase components
+- **Components**: Functional components with hooks
+- **Async**: async/await over .then()
+- **State**: useState/useEffect for local state
+
+## Key Files to Know
+
+### Backend Files
+- `Backend/app.py` - Main Flask application with TTS endpoints
+- `Backend/credentials.py` - Secure credential loading (env vars)
+- `Backend/.env` - Environment variables (gitignored)
+- `Backend/requirements.txt` - Python dependencies
+
+### Frontend Files  
+- `Frontend/src/App.js` - Main React component
+- `Frontend/src/index.js` - App entry point
+- `Frontend/package.json` - Node dependencies
+
+### Configuration
+- `.vscode/settings.json` - VS Code config with formatters
+- `mcp.json` - MCP agent configuration
+- `.gitignore` - Excludes credentials, build files, etc.
+
+## API Endpoints
+
+### Current Endpoints
+- `POST /api/detect-roles` - Extract character roles from text
+- `GET /api/voices` - List available TTS voices  
+- `POST /api/synthesize` - Generate audio with voice assignments
+
+### Response Format
+```json
+{
+  "success": true,
+  "data": {...},
+  "message": "Success description"
+}
+```
+
+## TTS Implementation Details
+
+### Role Detection
+- Pattern: `**Character Name:** dialogue text`
+- Regex: `r'\*\*(.*?):\*\*'` 
+- Extract unique character roles for voice assignment
+
+### Voice Processing
+- Google Cloud TTS API integration
+- Support multiple voice types per character
+- Generate MP3 audio output
+- Handle text chunking for long content
+
+## Common Tasks
+
+### Adding New API Endpoint
+1. Add route function in `Backend/app.py`
+2. Follow error handling pattern
+3. Add corresponding frontend API call
+4. Test with both unit and integration tests
+
+### Adding React Component
+1. Create functional component with hooks
+2. Use camelCase for props and state
+3. Add proper error boundaries
+4. Test user interactions
+
+### Environment Variables
+- Add to `Backend/.env` (never commit)
+- Load with `python-dotenv` in Flask
+- Access with `os.environ.get()`
+
+## Security Rules
+- **Never commit**: credentials.py, .env files, service account JSON
+- **Always validate**: User inputs and file uploads
+- **Use env vars**: For all secrets and API keys
+- **Log securely**: Don't log sensitive data
+
+## Testing Patterns
+
+### Python Tests (pytest)
+- Mock Google Cloud TTS API calls
+- Test role detection with various text formats
+- Validate error handling scenarios
+- Use fixtures for reusable test data
+
+### React Tests (Jest)
+- Test component rendering and user interactions
+- Mock API responses for integration tests
+- Test error states and loading states
+- Use React Testing Library patterns
+
+## Debugging Tips
+
+### Backend Issues
+- Check Flask logs in console
+- Use Python debugger (pdb) for breakpoints
+- Verify environment variables are loaded
+- Test API endpoints with curl/Postman
+
+### Frontend Issues  
+- Use browser DevTools console
+- Check Network tab for API request issues
+- Use React DevTools for component inspection
+- Verify state changes with hooks
+
+## Performance Considerations
+- TTS generation is async (don't block UI)
+- Show progress for long-running operations
+- Clean up temporary audio files
+- Cache voice lists and common data
+- Use appropriate HTTP status codes
+
+## Common Gotchas
+- Virtual environment must be activated for Python
+- CORS configuration needed for API calls
+- File paths use forward slashes in config
+- Environment variables need .env file
+- Google Cloud credentials require proper setup
+
+## MCP Integration
+- Configured MCP agents for development assistance
+- Python sandbox for testing code
+- Git operations with proper repository path
+- File system access for project management
+
+## Extension Configuration
+- VS Code extensions configured in `.vscode/`
+- Copilot instructions in `.github/copilot-instructions.md`
+- Multiple AI assistant rule files provided
+- Auto-formatting on save enabled
+
+## Useful Resources
+- Google Cloud TTS API documentation
+- React hooks documentation  
+- Flask routing and error handling patterns
+- pytest and Jest testing frameworks
+- Black and Prettier formatting guides

@@ -11,9 +11,11 @@ from flask_limiter.util import get_remote_address  # type: ignore
 from google.cloud import texttospeech
 from werkzeug.utils import secure_filename
 
+from cache import cache, cached
 from config import config
 from credentials import get_credentials
 from logging_config import setup_logging
+from performance import measure_time, monitor, track_request_metrics
 
 load_dotenv()
 setup_logging()
@@ -25,7 +27,7 @@ config_name = os.environ.get("FLASK_ENV", "development")
 app.config.from_object(config[config_name])
 
 # CORS configuration
-CORS(app, origins=app.config["ALLOWED_ORIGINS"], supports_credentials=True)
+CORS(app, origins=["http://localhost", "http://localhost:80", "http://localhost:3000"], supports_credentials=True)
 
 # Rate limiting with Redis
 limiter = Limiter(
@@ -37,6 +39,11 @@ limiter = Limiter(
 
 # Get logger
 logger = logging.getLogger(__name__)
+
+# Setup performance monitoring
+before_request_handler, after_request_handler = track_request_metrics()
+app.before_request(before_request_handler)
+app.after_request(after_request_handler)
 
 
 # Security headers
@@ -80,13 +87,15 @@ def sanitize_text_input(text):
 def get_tts_client():
     """Initializes and returns a TextToSpeechClient."""
     try:
+        from google.oauth2 import service_account
         creds = get_credentials()
         if creds:
-            client = texttospeech.TextToSpeechClient(credentials=creds)
+            credentials = service_account.Credentials.from_service_account_info(creds)
+            client = texttospeech.TextToSpeechClient(credentials=credentials)
             logger.info("TTS client initialized from service account")
             return client
-    except Exception:
-        logger.warning("Credentials helper failed; falling back to ADC")
+    except Exception as e:
+        logger.warning(f"Credentials helper failed: {e}; falling back to ADC")
 
     # Fallback to Application Default Credentials (ADC)
     client = texttospeech.TextToSpeechClient()
@@ -230,10 +239,11 @@ def parse_content_and_roles(content):
                 segments.append(segment)
 
             # Start new segment
-            current_role = role_match.group(1)
+            current_role = role_match.group(1).strip()
             roles.add(current_role)
-            text_content = line[len(role_match.group(0)) :].strip()
-            current_text = [text_content] if text_content else []
+            # Get the text following the role marker.
+            text_after_role = line[role_match.end() :].strip()
+            current_text = [text_after_role] if text_after_role else []
         elif line.strip() and current_role:
             current_text.append(line.strip())
 
@@ -282,6 +292,8 @@ def detect_roles():
 
 @app.route("/api/voices", methods=["GET"])
 @limiter.limit("30 per minute")
+@cached(ttl=1800, key_prefix="voices")
+@measure_time("api.list_voices")
 def list_voices():
     """Endpoint to list available English Google Cloud TTS voices."""
     try:
@@ -304,6 +316,8 @@ def list_voices():
 
 @app.route("/api/voices/all", methods=["GET"])
 @limiter.limit("10 per minute")
+@cached(ttl=3600, key_prefix="all_voices")
+@measure_time("api.list_all_voices")
 def list_all_voices():
     """Endpoint to list ALL available Google Cloud TTS voices."""
     try:
@@ -325,6 +339,7 @@ def list_all_voices():
 
 @app.route("/api/preview-voice", methods=["POST"])
 @limiter.limit("20 per minute")
+@measure_time("api.preview_voice")
 def preview_voice():
     """Endpoint to preview a voice with sample text."""
     try:
@@ -348,6 +363,13 @@ def preview_voice():
         client = get_tts_client()
 
         synthesis_input = texttospeech.SynthesisInput(text=sample_text)
+        
+        # Use Standard voices for preview (they work without model names)
+        if "Standard" not in voice_name:
+            # Fallback to a basic Standard voice for preview
+            voice_name = "en-US-Standard-A" if "en-US" in language_code else "en-GB-Standard-A"
+            language_code = "en-US" if "en-US" in language_code else "en-GB"
+        
         voice = texttospeech.VoiceSelectionParams(
             name=voice_name, language_code=language_code
         )
@@ -372,6 +394,7 @@ def preview_voice():
 
 @app.route("/api/synthesize", methods=["POST"])
 @limiter.limit("5 per minute")
+@measure_time("api.synthesize_speech")
 def synthesize_speech():
     """Endpoint to convert text to speech using selected voices."""
     try:
@@ -447,6 +470,25 @@ def synthesize_speech():
 def health_check():
     """Health check endpoint for monitoring."""
     return jsonify({"status": "healthy", "service": "etoaudiobook-api"})
+
+
+# Performance metrics endpoint
+@app.route("/metrics", methods=["GET"])
+def get_metrics():
+    """Get performance metrics."""
+    system_metrics = monitor.get_system_metrics()
+    metrics_summary = monitor.get_metrics_summary()
+
+    return jsonify(
+        {
+            "system": system_metrics,
+            "application": metrics_summary,
+            "cache_stats": {
+                "enabled": cache.enabled,
+                "redis_available": cache.redis_client is not None,
+            },
+        }
+    )
 
 
 if __name__ == "__main__":
