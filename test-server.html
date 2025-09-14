@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Backend</title></head>
+<body>
+<h1>Backend Server Test</h1>
+<button onclick="testAPI()">Test API</button>
+<div id="result"></div>
+
+<script>
+async function testAPI() {
+    const result = document.getElementById('result');
+    try {
+        const response = await fetch('http://localhost:5000/health');
+        const data = await response.text();
+        result.innerHTML = `<pre>Status: ${response.status}\nResponse: ${data}</pre>`;
+    } catch (error) {
+        result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+    }
+}
+</script>
+</body>
+</html>

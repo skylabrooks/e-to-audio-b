@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Agent Avatars Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .avatar-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .avatar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid #6c757d;
+        }
+        .avatar-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .avatar-theme {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .avatar-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+        .tag {
+            background: #007bff;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .tag.dark { background: #6f42c1; }
+        .tag.mythological { background: #20c997; }
+        .tag.playful { background: #fd7e14; }
+        .tag.female { background: #e83e8c; }
+        .tag.male { background: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 AI Voice Agent Avatars</h1>
+        <p style="text-align: center; color: #6c757d; font-size: 18px;">
+            Character-themed avatars generated based on voice characteristics
+        </p>
+        
+        <div class="avatar-grid" id="avatarGrid">
+            <!-- Avatars will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Sample voice data with avatars
+        const sampleVoices = [
+            {
+                name: "Charon",
+                tags: { character_theme: "dark", gender: "MALE" },
+                avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=charon&colors=2d1b69,1a1a2e,16213e&primaryColorLevel=600&secondaryColorLevel=700&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "Fenrir", 
+                tags: { character_theme: "dark", gender: "MALE" },
+                avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=fenrir&colors=2d1b69,1a1a2e,16213e&primaryColorLevel=600&secondaryColorLevel=700&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "Puck",
+                tags: { character_theme: "playful", gender: "MALE" },
+                avatar_url: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=puck&colors=ff6b6b,4ecdc4,45b7d1,96ceb4,feca57&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "Zephyr",
+                tags: { character_theme: "playful", gender: "FEMALE" },
+                avatar_url: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=zephyr&colors=ff6b6b,4ecdc4,45b7d1,96ceb4,feca57&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "Achernar",
+                tags: { character_theme: "mythological", gender: "FEMALE" },
+                avatar_url: "https://api.dicebear.com/7.x/personas/svg?seed=achernar&colors=4ecdc4,45b7d1,96ceb4,a8e6cf,dcedc1&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "Aoede",
+                tags: { character_theme: "mythological", gender: "FEMALE" },
+                avatar_url: "https://api.dicebear.com/7.x/personas/svg?seed=aoede&colors=4ecdc4,45b7d1,96ceb4,a8e6cf,dcedc1&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "en-US-Neural2-A",
+                tags: { character_theme: "neutral", gender: "MALE" },
+                avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=enusneural2a&hair=shortHairShortFlat,shortHairDreads01&clothingColor=262e33,3c4f5c&skinColor=ae5d29,f8d25c&backgroundColor=transparent&size=128"
+            },
+            {
+                name: "en-US-Neural2-C",
+                tags: { character_theme: "neutral", gender: "FEMALE" },
+                avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=enusneural2c&hair=longHairStraight,longHairCurly&clothingColor=3c4f5c,262e33&skinColor=ae5d29,f8d25c&backgroundColor=transparent&size=128"
+            }
+        ];
+
+        function renderAvatars() {
+            const grid = document.getElementById('avatarGrid');
+            
+            sampleVoices.forEach(voice => {
+                const card = document.createElement('div');
+                card.className = 'avatar-card';
+                
+                card.innerHTML = `
+                    <img src="${voice.avatar_url}" alt="${voice.name}" class="avatar-img" 
+                         style="border-color: ${voice.tags.gender === 'FEMALE' ? '#e83e8c' : '#007bff'}">
+                    <div class="avatar-name">${voice.name}</div>
+                    <div class="avatar-theme">${getThemeIcon(voice.tags.character_theme)} ${voice.tags.character_theme}</div>
+                    <div class="avatar-tags">
+                        <span class="tag ${voice.tags.character_theme}">${voice.tags.character_theme}</span>
+                        <span class="tag ${voice.tags.gender.toLowerCase()}">${voice.tags.gender}</span>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function getThemeIcon(theme) {
+            const icons = {
+                dark: '🦹',
+                playful: '🎭', 
+                mythological: '⚡',
+                neutral: '👤'
+            };
+            return icons[theme] || icons.neutral;
+        }
+
+        // Render avatars when page loads
+        renderAvatars();
+    </script>
+</body>
+</html>

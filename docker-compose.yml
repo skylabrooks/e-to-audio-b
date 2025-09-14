@@ -9,26 +9,45 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
       - REDIS_URL=redis://redis:6379
+      - MONGO_URI=mongodb://mongo:27017/
+      - MONGO_DB_NAME=etoaudiobook
     volumes:
       - ${GOOGLE_CREDENTIALS_PATH}:/app/credentials/service-account.json:ro
     ports:
-      - "5000:5000"
+      - '5000:5000'
     restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    extra_hosts:
+      - "texttospeech.googleapis.com:142.250.191.106"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
   frontend:
-    build: ./Frontend
+    build:
+      context: ./Frontend
+      args:
+        VITE_API_BASE_URL: http://backend:5000
     container_name: etoaudiobook-frontend
     ports:
-      - "80:80"
+      - '80:80'
     depends_on:
       - backend
     restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   redis:
     image: redis:7-alpine
@@ -38,5 +57,15 @@ services:
     volumes:
       - redis_data:/data
 
+  mongo:
+    image: mongo:latest
+    container_name: etoaudiobook-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
 volumes:
   redis_data:
+  mongo_data:

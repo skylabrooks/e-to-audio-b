@@ -154,3 +154,8 @@ docker-run:
 env-check:
 	@echo "Checking environment variables..."
 	@python -c "import os; print('✅ GOOGLE_APPLICATION_CREDENTIALS:', 'Set' if os.getenv('GOOGLE_APPLICATION_CREDENTIALS') else '❌ Missing')"
+
+# Optimization agent
+optimize-dry-run:
+	@echo "Running optimization agent (dry-run)..."
+	@python scripts/optimize_agent.py || (echo "Agent failed. See output above." && exit /b 1)

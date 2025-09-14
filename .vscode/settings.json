@@ -106,5 +106,43 @@
     "emmet.includeLanguages": {
         "javascript": "javascriptreact"
     },
-    "chat.mcp.access": "all"
+    "chat.mcp.access": "all",
+    "amp.guidanceFiles.specs": true,
+    "[dockerfile]": {
+      "editor.defaultFormatter": "david-reis.dockerlive"
+    },
+    "continue.enableConsole": true,
+    "agentterminal.cwdMode": "activeWorkspace",
+    "agentterminal.showStatusBar": true,
+    "agentterminal.profiles": [
+      
+      {
+        "id": "codex",
+        "label": "Codex",
+        "command": "codex",
+        "args": [],
+        "icon": "media/profile-codex.svg"
+      },
+      {
+        "id": "claude",
+        "label": "Claude Code",
+        "command": "claude",
+        "args": [],
+        "icon": "media/profile-claude.svg"
+      },
+      {
+        "id": "gemini",
+        "label": "Gemini CLI",
+        "command": "gemini",
+        "args": [],
+        "icon": "media/profile-gemini.svg"
+      },
+      {
+        "id": "qwen",
+        "label": "Qwen Code",
+        "command": "qwen",
+        "args": [],
+        "icon": "media/profile-qwen.svg"
+      }
+    ]
 }

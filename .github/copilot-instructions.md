@@ -1,17 +1,20 @@
 # GitHub Copilot Instructions for EtoAudioBook
 
 ## Project Context
+
 This is a React + Flask web application for converting text documents into multi-voice audiobooks using Google Cloud Text-to-Speech.
 
 ## Architecture
+
 - **Frontend**: React app in `/Frontend` directory
-- **Backend**: Flask API in `/Backend` directory  
+- **Backend**: Flask API in `/Backend` directory
 - **TTS**: Google Cloud Text-to-Speech integration
 - **File Structure**: Multi-voice audiobook generation with character role detection
 
 ## Code Style Guidelines
 
 ### Python (Backend)
+
 - Use snake_case for functions and variables
 - Use PascalCase for classes
 - Follow Google Cloud TTS patterns
@@ -20,6 +23,7 @@ This is a React + Flask web application for converting text documents into multi
 - Use environment variables for secrets (never hardcode credentials)
 
 ### JavaScript/React (Frontend)
+
 - Use camelCase naming convention
 - Prefer functional components with hooks
 - Use destructured props
@@ -27,12 +31,14 @@ This is a React + Flask web application for converting text documents into multi
 - Use async/await for API calls
 
 ### File Organization
+
 - Keep backend logic in `/Backend`
 - Keep frontend components in `/Frontend/src`
 - Use relative imports within same directory
 - Group imports: external libraries first, then internal modules
 
 ## Security Requirements
+
 - Never commit credentials or API keys
 - Use environment variables for all secrets
 - Validate all user inputs
@@ -40,6 +46,7 @@ This is a React + Flask web application for converting text documents into multi
 - Use proper error handling that doesn't expose internal details
 
 ## TTS Implementation Notes
+
 - Role detection uses markdown pattern `**Character Name:**`
 - Support multiple voice assignments per role
 - Generate MP3 audio output
@@ -47,6 +54,7 @@ This is a React + Flask web application for converting text documents into multi
 - Provide progress feedback for generation process
 
 ## Testing Approach
+
 - Write unit tests for business logic
 - Test TTS integration with mock data first
 - Test role detection patterns thoroughly
@@ -54,6 +62,7 @@ This is a React + Flask web application for converting text documents into multi
 - Test file upload and processing workflows
 
 ## API Patterns
+
 - Use RESTful API design
 - Return consistent JSON responses
 - Include proper HTTP status codes
@@ -61,6 +70,7 @@ This is a React + Flask web application for converting text documents into multi
 - Implement proper error response formats
 
 ## Common Patterns to Suggest
+
 - Environment variable loading with `python-dotenv`
 - Flask route error handling decorators
 - React component error boundaries
@@ -69,6 +79,7 @@ This is a React + Flask web application for converting text documents into multi
 - Audio playback controls
 
 ## Avoid These Patterns
+
 - Hardcoded API keys or credentials
 - Blocking synchronous operations for TTS
 - Missing error handling for API calls
@@ -77,13 +88,48 @@ This is a React + Flask web application for converting text documents into multi
 - Missing CORS configuration
 
 ## Helpful Libraries Already in Use
+
 - **Backend**: Flask, google-cloud-texttospeech, python-dotenv, flask-cors
 - **Frontend**: React, axios (for API calls)
 - **Testing**: pytest for backend, Jest for frontend
 
 ## Development Workflow
+
 - Use `make run-all` to start both servers
 - Backend runs on localhost:5000
-- Frontend runs on localhost:3000  
+- Frontend runs on localhost:3000
 - Use environment variables from `.env` files
 - Follow the commands in Makefile for testing and linting
+
+## Additional Notes
+
+### Build and Test Commands
+
+- Use `make` commands for common workflows:
+  - `make run-all`: Start both frontend and backend servers.
+  - `make test`: Run all tests.
+  - `make lint`: Lint the codebase.
+- Alternatively, use `.bat` scripts for Windows:
+  - `start-backend.bat`: Start the backend server.
+  - `start-frontend.bat`: Start the frontend server.
+  - `test-runner.bat`: Run tests.
+
+### Project-Specific Conventions
+
+- Refer to `.clinerules` and `.cursorrules` for detailed coding conventions.
+- Follow the guidelines in `AGENTS.md` for development practices.
+
+### Integration Points
+
+- Google Cloud Text-to-Speech: Ensure `service-account.json` is configured correctly in `/Backend/credentials/`.
+- Docker: Use `docker-compose.yml` for containerized deployments.
+
+### Debugging Tips
+
+- Logs are stored in `/Backend/logs/` for backend issues.
+- Use `performance-test.bat` and `load-test.bat` for performance analysis.
+
+### External Dependencies
+
+- Python: Install dependencies using `requirements.txt`.
+- JavaScript: Use `npm install` in `/Frontend` to install frontend dependencies.
